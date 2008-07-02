@@ -1,0 +1,14 @@
+Source: python-moira
+Section: python
+Priority: extra
+Maintainer: Evan Broder <broder@mit.edu>
+Build-Depends: cdbs (>= 0.4.23-1.1), debhelper (>= 5), debhelper (>= 5.0.37.2), cdbs (>= 0.4.43), python-all-dev (>= 2.3.5-11), python-support (>= 0.3.2), python-pyrex, python-setuptools, debathena-libmoira-dev
+Standards-Version: 3.7.2
+
+Package: python-moira
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Provides: ${python:Provides}
+Description: Python bindings for Moira
+ PyMoira provides a set of Python bindings for Moira, the Athena
+ Service Management system.
