@@ -13,7 +13,6 @@ setup(
     ext_modules=[
         Extension("moira",
                   ["moira.pyx"],
-                  include_dirs=["/usr/share/include"],
                   libraries=["moira", "krb5", "krb4", "hesiod"])
         ],
     cmdclass= {"build_ext": build_ext}

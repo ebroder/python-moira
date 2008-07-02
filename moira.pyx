@@ -1,4 +1,4 @@
-cdef extern from "moira.h":
+cdef extern from "moira/moira.h":
     int mr_krb5_auth(char * prog)
     int mr_auth(char * prog)
     int mr_connect(char * server)
