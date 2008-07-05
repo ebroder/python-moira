@@ -109,23 +109,7 @@ def noop():
     if status:
         raise MoiraException, status
 
-cdef int _query_callback(int argc, char ** argv, object results):
-    result = []
-    cdef int i
-    for i in xrange(argc):
-        result.append(argv[i])
-    results.append(tuple(result))
-    return 0
-
-def query(handle, *args):
-    """
-    Execute a Moira query and return the result as a list of tuples.
-    
-    All of the real work of Moira is done in queries. There are over
-    100 queries, each of which requires different arguments. The
-    arguments to the queries should be passed as separate arguments to
-    the function.
-    """
+def _query(handle, callback, *args):
     cdef int argc, i
     argc = len(args)
     cdef char ** argv
@@ -135,10 +119,16 @@ def query(handle, *args):
         for i in xrange(argc):
             argv[i] = args[i]
         
-        result = []
-        status = mr_query(handle, argc, argv, _query_callback, result)
+        status = mr_query(handle, argc, argv, _call_python_callback, callback)
         free(argv)
         
         if status:
             raise MoiraException, status
-        return result
+
+cdef int _call_python_callback(int argc, char ** argv, object callback):
+    result = []
+    cdef int i
+    for i in xrange(argc):
+        result.append(argv[i])
+    callback(tuple(result))
+    return 0
