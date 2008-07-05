@@ -17,13 +17,14 @@ help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\) => ([a-z0-9_, ]*)',
                      re.I)
 
 class __Handler(object):
-    def __init__(self, handle, *args):
+    def __init__(self, handle, *args, **kwargs):
         self.handle = handle
         self.args = args
+        self.kwargs = kwargs
         self.results = []
         
         self.setup()
-        _moira._query(handle, self.callback, *args)
+        _moira._query(handle, self.callback, *self.args)
         self.cleanup()
     
     def callback(self, result):
@@ -43,6 +44,9 @@ class __SmartHandler(__Handler):
     def setup(self):
         if self.handle not in self.return_cache:
             self.__load_help()
+        if self.kwargs != dict():
+            self.args = tuple(self.kwargs.get(i, '*') \
+                                  for i in self.arg_cache[self.handle])
     
     def __load_help(self):
         help_string = ', '.join(_list_query('_help', self.handle)[0]).strip()
@@ -54,7 +58,7 @@ class __SmartHandler(__Handler):
         returns = return_str.split(', ')
         
         for h in handles:
-            self.arg_cache[h] = returns
+            self.arg_cache[h] = args
             self.return_cache[h] = returns
     
     def callback(self, result):
@@ -63,11 +67,20 @@ class __SmartHandler(__Handler):
         self.results.append(dict_result)
 
 def _list_query(*args, **kwargs):
+    """
+    Execute a Moira query and return the result as a list of tuples.
+    
+    This bypasses the tuple -> dict conversion done in moira.query()
+    """
     return __Handler(*args, **kwargs).results
 
 def query(*args, **kwargs):
     """
     Execute a Moira query and return the result as a list of dicts.
+    
+    Arguments can be specified either as positional or keyword
+    arguments. If specified by keyword, they are crossreferenced with
+    the argument name given by the query "_help handle".
     
     All of the real work of Moira is done in queries. There are over
     100 queries, each of which requires different arguments. The
