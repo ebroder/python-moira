@@ -14,6 +14,11 @@ cdef extern from "stdlib.h":
     void * malloc(size_t size)
     void free(void * ptr)
 
+cdef extern char * whoami
+
+import sys
+whoami = sys.argv[0]
+
 class MoiraException(Exception):
     pass
 
