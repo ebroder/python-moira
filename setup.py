@@ -11,9 +11,10 @@ setup(
     author="Evan Broder",
     author_email="broder@mit.edu",
     license="MIT",
+    py_modules=['moira'],
     ext_modules=[
-        Extension("moira",
-                  ["moira.pyx"],
+        Extension("_moira",
+                  ["_moira.pyx"],
                   libraries=["moira", "krb5", "krb4", "hesiod"])
         ],
     cmdclass= {"build_ext": build_ext}
