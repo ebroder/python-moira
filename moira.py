@@ -13,7 +13,7 @@ from _moira import connect, disconnect, auth, host, motd, noop
 
 import re
 
-help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\) => ([a-z0-9_, ]*)',
+help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
                      re.I)
 
 class __Handler(object):
@@ -42,7 +42,8 @@ class __SmartHandler(__Handler):
     return_cache = dict()
     
     def setup(self):
-        if self.handle not in self.return_cache:
+        if self.handle not in self.return_cache or \
+                self.return_cache[self.handle] is None:
             self.__load_help()
         if self.kwargs != dict():
             self.args = tuple(self.kwargs.get(i, '*') \
@@ -51,7 +52,7 @@ class __SmartHandler(__Handler):
     def __load_help(self):
         help_string = ', '.join(_list_query('_help', self.handle)[0]).strip()
         
-        handle_str, arg_str, return_str = help_re.match(help_string).groups()
+        handle_str, arg_str, return_str = help_re.match(help_string).groups('')
         
         handles = handle_str.split(', ')
         args = arg_str.split(', ')
@@ -87,7 +88,10 @@ def query(*args, **kwargs):
     arguments to the queries should be passed as separate arguments to
     the function.
     """
-    return __SmartHandler(*args, **kwargs).results
+    if args[0] == '_help':
+        return _list_query(*args, **kwargs)
+    else:
+        return __SmartHandler(*args, **kwargs).results
 
 __all__ = ['connect', 'disconnect', 'auth', 'host', 'motd', 'noop', 'query',
            '_list_query']
