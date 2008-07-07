@@ -1,4 +1,5 @@
 cdef extern from "moira/moira.h":
+    void mr_init()
     int mr_krb5_auth(char * prog)
     int mr_auth(char * prog)
     int mr_connect(char * server)
@@ -9,20 +10,24 @@ cdef extern from "moira/moira.h":
     int mr_query(char * handle, int argc, char ** argv,
                  int (*callback)(int, char **, object), object callarg)
 
+cdef extern from "com_err.h":
+    ctypedef long errcode_t
+    char * error_message(errcode_t)
+
 cdef extern from "stdlib.h":
     ctypedef unsigned long size_t
     void * malloc(size_t size)
     void free(void * ptr)
 
-cdef extern char * whoami
-
-import sys
-whoami = sys.argv[0]
+mr_init()
 
 class MoiraException(Exception):
     pass
 
 __connected = False
+
+def _error(code):
+    raise MoiraException, (code, error_message(code))
 
 def connect(server=''):
     """
@@ -46,7 +51,7 @@ def connect(server=''):
     
     status = mr_connect(server)
     if status != 0:
-        raise MoiraException, status
+        _error(status)
     else:
         __connected = True
 
@@ -77,7 +82,7 @@ def auth(program, krb4=False):
     else:
         status = mr_krb5_auth(program)
     if status != 0:
-        raise MoiraException, status
+        _error(status)
 
 def host():
     """
@@ -86,7 +91,7 @@ def host():
     cdef char buffer[512]
     status = mr_host(buffer, 512)
     if status != 0:
-        raise MoiraException, status
+        _error(status)
     return buffer
 
 def motd():
@@ -96,7 +101,7 @@ def motd():
     cdef char * motd
     status = mr_motd(&motd)
     if status != 0:
-        raise MoiraException, status
+        _error(status)
     if motd != NULL:
         return motd
 
@@ -107,7 +112,7 @@ def noop():
     """
     status = mr_noop()
     if status:
-        raise MoiraException, status
+        _error(status)
 
 def _query(handle, callback, *args):
     cdef int argc, i
@@ -123,7 +128,7 @@ def _query(handle, callback, *args):
         free(argv)
         
         if status:
-            raise MoiraException, status
+            _error(status)
 
 cdef int _call_python_callback(int argc, char ** argv, object callback):
     result = []
