@@ -27,7 +27,7 @@ class MoiraException(Exception):
 __connected = False
 
 def _error(code):
-    raise MoiraException, error_message(code)
+    raise MoiraException, (code, error_message(code))
 
 def connect(server=''):
     """
