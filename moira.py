@@ -88,7 +88,7 @@ def query(*args, **kwargs):
     arguments to the queries should be passed as separate arguments to
     the function.
     """
-    if args[0] == '_help':
+    if args[0].startswith('_'):
         return _list_query(*args, **kwargs)
     else:
         return __SmartHandler(*args, **kwargs).results
