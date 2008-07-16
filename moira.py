@@ -12,6 +12,8 @@ import _moira
 from _moira import connect, disconnect, auth, host, motd, noop
 
 import re
+import threading
+from Queue import Queue
 
 help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
                      re.I)
@@ -23,15 +25,38 @@ class __Handler(object):
         self.kwargs = kwargs
         self.results = []
         
+        self.q = Queue()
+        self.worker = threading.Thread(target=self.do_query)
+        
         self.setup()
-        _moira._query(handle, self.callback, *self.args)
+        self.worker.start()
+    
+    def do_query(self):
+        try:
+            _moira._query(self.handle, self.callback, *self.args)
+        except Exception, e:
+            self.q.put(e)
+        self.q.put(None)
         self.cleanup()
     
     def callback(self, result):
+        self.q.put(result)
         self.results.append(result)
+    
+    def __iter__(self):
+        i = 0
+        while True:
+            item = self.q.get()
+            if item is None:
+                break
+            elif isinstance(item, Exception):
+                raise item
+            else:
+                yield item
     
     def cleanup(self):
         pass
+    
     def setup(self):
         pass
 
@@ -50,7 +75,7 @@ class __SmartHandler(__Handler):
                                   for i in self.arg_cache[self.handle])
     
     def __load_help(self):
-        help_string = ', '.join(_list_query('_help', self.handle)[0]).strip()
+        help_string = ', '.join(list(_list_query('_help', self.handle))[0]).strip()
         
         handle_str, arg_str, return_str = help_re.match(help_string).groups('')
         
@@ -65,6 +90,7 @@ class __SmartHandler(__Handler):
     def callback(self, result):
         dict_result = dict()
         map(dict_result.__setitem__, self.return_cache[self.handle], result)
+        self.q.put(dict_result)
         self.results.append(dict_result)
 
 def _list_query(*args, **kwargs):
@@ -73,7 +99,7 @@ def _list_query(*args, **kwargs):
     
     This bypasses the tuple -> dict conversion done in moira.query()
     """
-    return __Handler(*args, **kwargs).results
+    return __Handler(*args, **kwargs)
 
 def query(*args, **kwargs):
     """
@@ -91,7 +117,7 @@ def query(*args, **kwargs):
     if args[0].startswith('_'):
         return _list_query(*args, **kwargs)
     else:
-        return __SmartHandler(*args, **kwargs).results
+        return __SmartHandler(*args, **kwargs)
 
 __all__ = ['connect', 'disconnect', 'auth', 'host', 'motd', 'noop', 'query',
            '_list_query']

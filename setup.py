@@ -6,7 +6,7 @@ from Pyrex.Distutils import build_ext
 
 setup(
     name="PyMoira",
-    version="2.1.1",
+    version="3.0.0",
     description="PyMoira - Python bindings for the Athena Moira library",
     author="Evan Broder",
     author_email="broder@mit.edu",
