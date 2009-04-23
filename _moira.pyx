@@ -121,7 +121,7 @@ def _query(handle, callback, *args):
     argv = <char **>malloc(argc * sizeof(char *))
     
     if argv != NULL:
-        for 0 <= i < argc:
+        for i in 0 <= i < argc:
             argv[i] = args[i]
         
         status = mr_query(handle, argc, argv, _call_python_callback, callback)
@@ -133,7 +133,7 @@ def _query(handle, callback, *args):
 cdef int _call_python_callback(int argc, char ** argv, object callback):
     result = []
     cdef int i
-    for 0 <= i < argc:
+    for i in 0 <= i < argc:
         result.append(argv[i])
     callback(tuple(result))
     return 0
