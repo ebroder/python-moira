@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 Python bindings for the Moira library
 
