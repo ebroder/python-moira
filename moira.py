@@ -67,7 +67,7 @@ def query(handle, *args, **kwargs):
     the function.
     """
     if handle.startswith('_'):
-        return _list_query(handle, *args, **kwargs)
+        return _list_query(handle, *args)
     else:
 
         if handle not in _return_cache or \
@@ -78,7 +78,7 @@ def query(handle, *args, **kwargs):
             args = tuple(kwargs.get(i, '*') \
                              for i in _arg_cache[handle])
 
-        plain_results = _list_query(handle, *args, **kwargs)
+        plain_results = _list_query(handle, *args)
         results = []
 
         for r in plain_results:
