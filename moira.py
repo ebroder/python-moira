@@ -9,7 +9,8 @@ queues, and several other aspects of the Athena environment.
 import re
 
 import _moira
-from _moira import connect, disconnect, auth, host, motd, noop
+from _moira import (connect, disconnect, auth, host, motd, noop,
+                    MoiraException)
 
 
 help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
