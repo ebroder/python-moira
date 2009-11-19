@@ -17,5 +17,6 @@ setup(
                   ["_moira.pyx"],
                   libraries=["moira", "krb5", "krb4", "hesiod"])
         ],
+    scripts=['qy'],
     cmdclass= {"build_ext": build_ext}
 )
