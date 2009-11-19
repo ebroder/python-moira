@@ -6,7 +6,7 @@ from Pyrex.Distutils import build_ext
 
 setup(
     name="PyMoira",
-    version="4.0",
+    version="4.1",
     description="PyMoira - Python bindings for the Athena Moira library",
     author="Evan Broder",
     author_email="broder@mit.edu",
@@ -17,5 +17,6 @@ setup(
                   ["_moira.pyx"],
                   libraries=["moira", "krb5", "krb4", "hesiod"])
         ],
+    scripts=['qy'],
     cmdclass= {"build_ext": build_ext}
 )

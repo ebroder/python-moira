@@ -69,10 +69,11 @@ def query(handle, *args, **kwargs):
     if handle.startswith('_'):
         return _list_query(handle, *args)
     else:
-
         if handle not in _return_cache or \
                 not _return_cache[handle]:
             _load_help(handle)
+
+        fmt = kwargs.pop('fmt', dict)
 
         if kwargs:
             args = tuple(kwargs.get(i, '*') \
@@ -82,7 +83,7 @@ def query(handle, *args, **kwargs):
         results = []
 
         for r in plain_results:
-            results.append(dict(zip(_return_cache[handle], r)))
+            results.append(fmt(zip(_return_cache[handle], r)))
 
         return results
 

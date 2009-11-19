@@ -1,0 +1,69 @@
+#!/usr/bin/python
+"""qy: A scriptable, command-line Moira client."""
+
+import optparse
+
+import moira
+
+
+def parser():
+    p = optparse.OptionParser(usage='Usage: %prog [options] query args...')
+    p.add_option('--db', '--database',
+                 dest='database',
+                 default='',
+                 help='Host and port of the Moira database to contact')
+    p.add_option('-n', '--noauth',
+                 dest='auth',
+                 action='store_false',
+                 default=True,
+                 help="Don't use Kerberos authentication")
+    p.add_option('-p', '--program',
+                 dest='program',
+                 default='pyqy',
+                 help='Program name to use when identifying to the Moira database')
+    p.add_option('-s', '--single',
+                 dest='single',
+                 action='store_true',
+                 default=False,
+                 help='Print each result on a single line')
+    p.add_option('-f', '--fields',
+                 dest='fields',
+                 help='Only print out values from this list of comma-separated fields')
+
+    return p
+
+
+def filter_fields(result, fields):
+    return [(k, v) for (k, v) in result if \
+                not fields or k in fields]
+
+
+def main():
+    p = parser()
+    options, args = p.parse_args()
+
+    if len(args) < 1:
+        p.error('No query specified.')
+
+    if options.fields:
+        options.fields = set(options.fields.split(','))
+
+    moira.connect(options.database)
+    if options.auth:
+        moira.auth(options.program)
+
+    results = moira.query(fmt=tuple, *args)
+
+    for r in results:
+        keylen = max(len(k) for (k, v) in r)
+        r = filter_fields(r, options.fields)
+
+        if options.single:
+            print ', '.join(v for (k, v) in r)
+        else:
+            for k, v in r:
+                print '%-*s: %s' % (keylen, k, v)
+            print
+
+if __name__ == '__main__':
+    main()
