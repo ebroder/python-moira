@@ -90,4 +90,4 @@ def query(handle, *args, **kwargs):
 
 
 __all__ = ['connect', 'disconnect', 'auth', 'host', 'motd', 'noop', 'query',
-           '_list_query']
+           '_list_query', 'MoiraException']
