@@ -6,6 +6,7 @@ central repository for information about users, groups hosts, print
 queues, and several other aspects of the Athena environment.
 """
 
+import os
 import re
 
 import _moira
@@ -15,10 +16,12 @@ from _moira import (connect, disconnect, auth, host, motd, noop,
 
 help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
                      re.I)
+et_re = re.compile(r'^\s*#\s*define\s+([A-Za-z0-9_]+)\s+.*?([0-9]+)')
 
 
 _arg_cache = {}
 _return_cache = {}
+_et_cache = {}
 
 
 def _load_help(handle):
@@ -87,6 +90,30 @@ def query(handle, *args, **kwargs):
             results.append(fmt(zip(_return_cache[handle], r)))
 
         return results
+
+
+def errors():
+    """
+    Return a dict of Moira error codes.
+
+    This function parses error codes out of the Moira header files and
+    returns a dictionary of those error codes.
+
+    The value that's returned should be treated as immutable. It's a
+    bug that it isn't.
+    """
+    if not _et_cache:
+        for prefix in ('/usr/include',
+                       '/sw/include'):
+            header = os.path.join(prefix, 'moira/mr_et.h')
+            if os.path.exists(header):
+                for line in open(header):
+                    m = et_re.search(line)
+                    if m:
+                        errname, errcode = m.groups()
+                        _et_cache[errname] = errcode
+
+    return _et_cache
 
 
 __all__ = ['connect', 'disconnect', 'auth', 'host', 'motd', 'noop', 'query',
