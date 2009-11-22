@@ -52,18 +52,22 @@ def main():
     if options.auth:
         moira.auth(options.program)
 
-    results = moira.query(fmt=tuple, *args)
+    if args[0].startswith('_'):
+        print '\n'.join(', '.join(x) for x in
+                        moira._list_query(*args))
+    else:
+        results = moira.query(fmt=tuple, *args)
 
-    for r in results:
-        keylen = max(len(k) for (k, v) in r)
-        r = filter_fields(r, options.fields)
+        for r in results:
+            keylen = max(len(k) for (k, v) in r)
+            r = filter_fields(r, options.fields)
 
-        if options.single:
-            print ', '.join(v for (k, v) in r)
-        else:
-            for k, v in r:
-                print '%-*s: %s' % (keylen, k, v)
-            print
+            if options.single:
+                print ', '.join(v for (k, v) in r)
+            else:
+                for k, v in r:
+                    print '%-*s: %s' % (keylen, k, v)
+                print
 
 if __name__ == '__main__':
     main()
