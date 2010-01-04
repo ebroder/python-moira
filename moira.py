@@ -111,7 +111,7 @@ def errors():
                     m = et_re.search(line)
                     if m:
                         errname, errcode = m.groups()
-                        _et_cache[errname] = errcode
+                        _et_cache[errname] = int(errcode)
 
     return _et_cache
 
