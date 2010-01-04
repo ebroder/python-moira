@@ -57,12 +57,36 @@ def _list_query(handle, *args):
     return results
 
 
+def _parse_args(handle, args, kwargs):
+    """
+    Convert a set of arguments into the canonical Moira list form.
+
+    Both query and access accept either positional arguments or
+    keyword arguments, cross-referenced against the argument names
+    given by the "_help" query.
+
+    This function takes the args and kwargs as they're provided to
+    either of those functions and returns a list of purely positional
+    arguments that can be passed to the low-level Moira query
+    function.
+    """
+    if (handle not in _return_cache or
+        not _return_cache[handle]):
+        _load_help(handle)
+
+    if kwargs:
+        return tuple(kwargs.get(i, '*')
+                     for i in _arg_cache[handle])
+    else:
+        return args
+
+
 def query(handle, *args, **kwargs):
     """
     Execute a Moira query and return the result as a list of dicts.
     
     Arguments can be specified either as positional or keyword
-    arguments. If specified by keyword, they are crossreferenced with
+    arguments. If specified by keyword, they are cross-referenced with
     the argument name given by the query "_help handle".
     
     All of the real work of Moira is done in queries. There are over
@@ -73,15 +97,9 @@ def query(handle, *args, **kwargs):
     if handle.startswith('_'):
         return _list_query(handle, *args)
     else:
-        if handle not in _return_cache or \
-                not _return_cache[handle]:
-            _load_help(handle)
-
         fmt = kwargs.pop('fmt', dict)
 
-        if kwargs:
-            args = tuple(kwargs.get(i, '*') \
-                             for i in _arg_cache[handle])
+        args = _parse_args(handle, args, kwargs)
 
         plain_results = _list_query(handle, *args)
         results = []
