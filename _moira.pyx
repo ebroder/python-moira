@@ -22,7 +22,9 @@ cdef extern from "stdlib.h":
 mr_init()
 
 class MoiraException(Exception):
-    pass
+    def code(self):
+        return self.args[0]
+    code = property(code)
 
 __connected = False
 
