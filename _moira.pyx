@@ -9,6 +9,7 @@ cdef extern from "moira/moira.h":
     int mr_noop()
     int mr_query(char * handle, int argc, char ** argv,
                  int (*callback)(int, char **, object), object callarg)
+    int mr_access(char *handle, int argc, char ** argv)
 
 cdef extern from "com_err.h":
     ctypedef long errcode_t
@@ -115,6 +116,26 @@ def noop():
     status = mr_noop()
     if status:
         _error(status)
+
+def _access(handle, *args):
+    """
+    Verifies that the authenticated user has the access to perform the
+    given query.
+    """
+    cdef int argc, i
+    argc = len(args)
+    cdef char ** argv
+    argv = <char **>malloc(argc * sizeof(char *))
+
+    if argv != NULL:
+        for 0 <= i < argc:
+            argv[i] = args[i]
+
+        status = mr_access(handle, argc, argv)
+        free(argv)
+
+        if status:
+            _error(status)
 
 def _query(handle, callback, *args):
     cdef int argc, i
