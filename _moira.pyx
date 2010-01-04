@@ -10,6 +10,7 @@ cdef extern from "moira/moira.h":
     int mr_query(char * handle, int argc, char ** argv,
                  int (*callback)(int, char **, void *), object callarg)
     int mr_access(char *handle, int argc, char ** argv)
+    int mr_proxy(char *principal, char *orig_authtype)
 
     enum:
         MR_SUCCESS
@@ -156,6 +157,21 @@ def _query(handle, callback, *args):
         
         if status:
             _error(status)
+
+def proxy(principal, orig_authtype):
+    """
+    Authenticate as a proxy for another principal.
+
+    For those with sufficient privilege, proxy allows an authenticated
+    user to impersonate another.
+
+    The principal argument contains the Kerberos principal for which
+    this user is proxying, and orig_authtype is the mechanism by which
+    the proxied user originally authenticated to the proxier.
+    """
+    status = mr_proxy(principal, orig_authtype)
+    if status != MR_SUCCESS:
+        _error(status)
 
 cdef int _call_python_callback(int argc, char ** argv, void * hint):
     cdef object callback

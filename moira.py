@@ -10,7 +10,7 @@ import os
 import re
 
 import _moira
-from _moira import (connect, auth, host, motd, noop, MoiraException)
+from _moira import (connect, auth, host, motd, noop, proxy, MoiraException)
 
 
 help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
