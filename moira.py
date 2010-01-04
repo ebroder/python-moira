@@ -110,6 +110,30 @@ def query(handle, *args, **kwargs):
         return results
 
 
+def access(handle, *args, **kwargs):
+    """
+    Determine if the user has the necessary access to perform a query.
+
+    As with moira.query, arguments can be specified either as
+    positional or keyword arguments. If specified as keywords, they
+    are cross-referenced with the argument names given by the "_help"
+    query.
+
+    This function returns True if the user, as currently
+    authenticated, would be allowed to perform the query with the
+    given arguments, and False otherwise.
+    """
+    args = _parse_args(handle, args, kwargs)
+
+    try:
+        _moira._access(handle, *args)
+        return True
+    except MoiraException, e:
+        if e.code != errors()['MR_PERM']:
+            raise
+        return False
+
+
 def errors():
     """
     Return a dict of Moira error codes.
