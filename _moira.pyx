@@ -8,7 +8,7 @@ cdef extern from "moira/moira.h":
     int mr_motd(char ** motd)
     int mr_noop()
     int mr_query(char * handle, int argc, char ** argv,
-                 int (*callback)(int, char **, object), object callarg)
+                 int (*callback)(int, char **, void *), object callarg)
     int mr_access(char *handle, int argc, char ** argv)
 
     enum:
@@ -157,7 +157,9 @@ def _query(handle, callback, *args):
         if status:
             _error(status)
 
-cdef int _call_python_callback(int argc, char ** argv, object callback):
+cdef int _call_python_callback(int argc, char ** argv, void * hint):
+    cdef object callback
+    callback = <object>hint
     result = []
     cdef int i
     for 0 <= i < argc:
