@@ -10,8 +10,7 @@ import os
 import re
 
 import _moira
-from _moira import (connect, disconnect, auth, host, motd, noop,
-                    MoiraException)
+from _moira import (connect, auth, host, motd, noop, MoiraException)
 
 
 help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
@@ -22,6 +21,22 @@ et_re = re.compile(r'^\s*#\s*define\s+([A-Za-z0-9_]+)\s+.*?([0-9]+)')
 _arg_cache = {}
 _return_cache = {}
 _et_cache = {}
+
+
+def _clear_caches():
+    """Clear query caches.
+
+    Clears all caches that may only be accurate for a particular Moira
+    server or query version.
+    """
+    _arg_cache.clear()
+    _return_cache.clear()
+
+
+def disconnect():
+    """Disconnect from the active Moira server"""
+    _moira.disconnect()
+    _clear_caches()
 
 
 def _load_help(handle):
