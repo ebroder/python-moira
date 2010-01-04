@@ -1,5 +1,4 @@
 cdef extern from "moira/moira.h":
-    void mr_init()
     int mr_krb5_auth(char * prog)
     int mr_auth(char * prog)
     int mr_connect(char * server)
@@ -24,8 +23,6 @@ cdef extern from "stdlib.h":
     ctypedef unsigned long size_t
     void * malloc(size_t size)
     void free(void * ptr)
-
-mr_init()
 
 class MoiraException(Exception):
     def code(self):
