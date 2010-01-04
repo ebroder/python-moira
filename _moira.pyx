@@ -11,6 +11,10 @@ cdef extern from "moira/moira.h":
                  int (*callback)(int, char **, object), object callarg)
     int mr_access(char *handle, int argc, char ** argv)
 
+    enum:
+        MR_SUCCESS
+        MR_CONT
+
 cdef extern from "com_err.h":
     ctypedef long errcode_t
     char * error_message(errcode_t)
@@ -53,7 +57,7 @@ def connect(server=''):
         disconnect()
     
     status = mr_connect(server)
-    if status != 0:
+    if status != MR_SUCCESS:
         _error(status)
     else:
         __connected = True
@@ -84,7 +88,7 @@ def auth(program, krb4=False):
         status = mr_auth(program)
     else:
         status = mr_krb5_auth(program)
-    if status != 0:
+    if status != MR_SUCCESS:
         _error(status)
 
 def host():
@@ -93,7 +97,7 @@ def host():
     """
     cdef char buffer[512]
     status = mr_host(buffer, 512)
-    if status != 0:
+    if status != MR_SUCCESS:
         _error(status)
     return buffer
 
@@ -103,7 +107,7 @@ def motd():
     """
     cdef char * motd
     status = mr_motd(&motd)
-    if status != 0:
+    if status != MR_SUCCESS:
         _error(status)
     if motd != NULL:
         return motd
@@ -159,4 +163,4 @@ cdef int _call_python_callback(int argc, char ** argv, object callback):
     for 0 <= i < argc:
         result.append(argv[i])
     callback(tuple(result))
-    return 0
+    return MR_CONT
