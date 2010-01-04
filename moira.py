@@ -159,4 +159,4 @@ def errors():
 
 
 __all__ = ['connect', 'disconnect', 'auth', 'host', 'motd', 'noop', 'query',
-           '_list_query', 'MoiraException']
+           'access', 'errors', '_list_query', 'MoiraException']
