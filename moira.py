@@ -10,7 +10,7 @@ import os
 import re
 
 import _moira
-from _moira import (connect, auth, host, motd, noop, proxy, MoiraException)
+from _moira import (auth, host, motd, noop, proxy, MoiraException)
 
 
 help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
@@ -31,6 +31,25 @@ def _clear_caches():
     """
     _arg_cache.clear()
     _return_cache.clear()
+
+
+def connect(server=''):
+    """
+    Establish a connection to a Moira server.
+
+    A server may be specified, but it is optional. If specified, it
+    should be of the form hostname:portname. Portname will be looked
+    up in /etc/services if specified, but it is optional as well.
+
+    If no server is specified, the server will be found from the
+    MOIRASERVER environment variable, Hesiod, or a compiled in default
+    (in that order).
+
+    This function raises a MoiraException if the connection is
+    not successful.
+    """
+    _moira.connect(server)
+    version(-1)
 
 
 def disconnect():
