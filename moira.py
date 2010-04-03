@@ -149,6 +149,28 @@ def access(handle, *args, **kwargs):
         return False
 
 
+def version(ver):
+    """
+    Exchange query version info with the server.
+
+    In order to allow changing queries without breaking client
+    compatibility, the Moira server supports multiple versions of the
+    query list simultaneously. Use version to change which one is
+    currently being used.
+
+    The ver argument is a signed integer containing the query version
+    to use. If ver is -1, Moira will always use the more recent query
+    version.
+
+    version returns True if you requested the most recent version
+    number and False if you requested an out-of-date version number.
+    """
+    # Changing the Moira version can change a query's arguments and
+    # return values
+    _clear_caches()
+    return _moira.version(ver)
+
+
 def errors():
     """
     Return a dict of Moira error codes.
@@ -174,4 +196,5 @@ def errors():
 
 
 __all__ = ['connect', 'disconnect', 'auth', 'host', 'motd', 'noop', 'query',
-           'access', 'errors', '_list_query', 'MoiraException']
+           'proxy', 'version', 'access', 'errors', '_list_query',
+           'MoiraException']

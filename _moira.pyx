@@ -10,10 +10,13 @@ cdef extern from "moira/moira.h":
                  int (*callback)(int, char **, void *), object callarg)
     int mr_access(char *handle, int argc, char ** argv)
     int mr_proxy(char *principal, char *orig_authtype)
+    int mr_version(int version)
 
     enum:
         MR_SUCCESS
         MR_CONT
+
+        MR_VERSION_LOW
 
 cdef extern from "com_err.h":
     ctypedef long errcode_t
@@ -168,6 +171,30 @@ def proxy(principal, orig_authtype):
     """
     status = mr_proxy(principal, orig_authtype)
     if status != MR_SUCCESS:
+        _error(status)
+
+def version(ver):
+    """
+    Exchange query version info with the server.
+
+    In order to allow changing queries without breaking client
+    compatibility, the Moira server supports multiple versions of the
+    query list simultaneously. Use version to change which one is
+    currently being used.
+
+    The ver argument is a signed integer containing the query version
+    to use. If ver is -1, Moira will always use the more recent query
+    version.
+
+    version returns True if you requested the most recent version
+    number and False if you requested an out-of-date version number.
+    """
+    status = mr_version(ver)
+    if status == MR_SUCCESS:
+        return True
+    elif status == MR_VERSION_LOW:
+        return False
+    else:
         _error(status)
 
 cdef int _call_python_callback(int argc, char ** argv, void * hint):
