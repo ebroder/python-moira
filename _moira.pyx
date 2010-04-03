@@ -130,7 +130,7 @@ def _access(handle, *args):
     argv = <char **>malloc(argc * sizeof(char *))
 
     if argv != NULL:
-        for 0 <= i < argc:
+        for i in xrange(argc):
             argv[i] = args[i]
 
         status = mr_access(handle, argc, argv)
@@ -146,7 +146,7 @@ def _query(handle, callback, *args):
     argv = <char **>malloc(argc * sizeof(char *))
     
     if argv != NULL:
-        for 0 <= i < argc:
+        for i in xrange(argc):
             argv[i] = args[i]
         
         status = mr_query(handle, argc, argv, _call_python_callback, callback)
@@ -175,7 +175,7 @@ cdef int _call_python_callback(int argc, char ** argv, void * hint):
     callback = <object>hint
     result = []
     cdef int i
-    for 0 <= i < argc:
+    for i in xrange(argc):
         result.append(argv[i])
     callback(tuple(result))
     return MR_CONT
