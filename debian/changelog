@@ -1,8 +1,9 @@
 python-moira (4.2-3) unstable; urgency=low
 
   * Leave qy out of the package for now.
+  * Do a better job of cleaning up.
 
- -- Evan Broder <broder@mit.edu>  Fri, 02 Apr 2010 23:03:25 -0400
+ -- Evan Broder <broder@mit.edu>  Fri, 02 Apr 2010 23:04:15 -0400
 
 python-moira (4.2-2) unstable; urgency=low
 
