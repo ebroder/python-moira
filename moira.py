@@ -34,22 +34,9 @@ def _clear_caches():
 
 
 def connect(server=''):
-    """
-    Establish a connection to a Moira server.
-
-    A server may be specified, but it is optional. If specified, it
-    should be of the form hostname:portname. Portname will be looked
-    up in /etc/services if specified, but it is optional as well.
-
-    If no server is specified, the server will be found from the
-    MOIRASERVER environment variable, Hesiod, or a compiled in default
-    (in that order).
-
-    This function raises a MoiraException if the connection is
-    not successful.
-    """
     _moira.connect(server)
     version(-1)
+connect.__doc__ = _moira.connect.__doc__
 
 
 def disconnect():
@@ -169,25 +156,11 @@ def access(handle, *args, **kwargs):
 
 
 def version(ver):
-    """
-    Exchange query version info with the server.
-
-    In order to allow changing queries without breaking client
-    compatibility, the Moira server supports multiple versions of the
-    query list simultaneously. Use version to change which one is
-    currently being used.
-
-    The ver argument is a signed integer containing the query version
-    to use. If ver is -1, Moira will always use the more recent query
-    version.
-
-    version returns True if you requested the most recent version
-    number and False if you requested an out-of-date version number.
-    """
     # Changing the Moira version can change a query's arguments and
     # return values
     _clear_caches()
     return _moira.version(ver)
+version.__doc__ = _moira.version.__doc__
 
 
 def errors():
