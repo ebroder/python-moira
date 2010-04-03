@@ -6,5 +6,8 @@ DEB_PYTHON_SYSTEM=pysupport
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
 
+binary-fixup/python-moira::
+	rm -rf debian/$(cdbs_curpkg)/usr/bin
+
 clean::
 	rm -rf moira.c PyMoira.egg-info
