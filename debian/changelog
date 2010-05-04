@@ -1,3 +1,9 @@
+python-moira (4.3.0-2) unstable; urgency=low
+
+  * Add missing build-dependency on debathena-libmrclient-dev.
+
+ -- Evan Broder <broder@mit.edu>  Tue, 04 May 2010 10:42:00 -0400
+
 python-moira (4.3.0-1) unstable; urgency=low
 
   * New upstream version.
