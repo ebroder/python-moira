@@ -1,3 +1,9 @@
+python-moira (4.3.0-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Evan Broder <broder@mit.edu>  Tue, 04 May 2010 10:35:47 -0400
+
 python-moira (4.2.2-1) unstable; urgency=low
 
   * New upstream version
