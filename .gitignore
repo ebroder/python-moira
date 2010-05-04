@@ -1,4 +1,6 @@
 _moira.c
+mrclient.c
+mrclient.h
 *.so
 *.pyc
 build

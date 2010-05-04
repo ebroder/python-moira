@@ -15,7 +15,10 @@ setup(
     ext_modules=[
         Extension("_moira",
                   ["_moira.pyx"],
-                  libraries=["moira", "krb5"])
+                  libraries=["moira", "krb5"]),
+        Extension("mrclient",
+                  ["mrclient.pyx"],
+                  libraries=["mrclient", "moira"]),
         ],
     scripts=['qy'],
     cmdclass= {"build_ext": build_ext}
