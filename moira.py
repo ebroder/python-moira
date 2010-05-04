@@ -10,7 +10,7 @@ import os
 import re
 
 import _moira
-from _moira import (connect, auth, host, motd, noop, proxy, MoiraException)
+from _moira import (auth, host, motd, noop, proxy, MoiraException)
 
 
 help_re = re.compile('([a-z0-9_, ]*) \(([a-z0-9_, ]*)\)(?: => ([a-z0-9_, ]*))?',
@@ -31,6 +31,12 @@ def _clear_caches():
     """
     _arg_cache.clear()
     _return_cache.clear()
+
+
+def connect(server=''):
+    _moira.connect(server)
+    version(-1)
+connect.__doc__ = _moira.connect.__doc__
 
 
 def disconnect():
@@ -149,6 +155,14 @@ def access(handle, *args, **kwargs):
         return False
 
 
+def version(ver):
+    # Changing the Moira version can change a query's arguments and
+    # return values
+    _clear_caches()
+    return _moira.version(ver)
+version.__doc__ = _moira.version.__doc__
+
+
 def errors():
     """
     Return a dict of Moira error codes.
@@ -174,4 +188,5 @@ def errors():
 
 
 __all__ = ['connect', 'disconnect', 'auth', 'host', 'motd', 'noop', 'query',
-           'access', 'errors', '_list_query', 'MoiraException']
+           'proxy', 'version', 'access', 'errors', '_list_query',
+           'MoiraException']
